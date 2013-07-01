@@ -7,12 +7,14 @@ import pylab as plt
 import sys
 from random import randint
 from matplotlib import *
-from grifflib import *
-import mergertrees.GregNewMTCatalogue as MT
+from brendanlib.grifflib import *
+import mergertrees.MTCatalogue as MT
 
 # DEFINE PARAMS
 #candidatelist = [80609,158376]
-candidatelist = [208737]
+
+candidatelist = [103794]
+#[208737]
 #190897]
 #,208737,140666,28221,147419,28188,147273,78411,131988,19910]
 ticksize = 11
@@ -79,8 +81,10 @@ ncols = 0
 icand = 0
 for haloid in candidatelist:
     haloid = int(haloid)
-    halotree = MT.NewMTCatalogue(treefile,indexfile,hostid=haloid)
-    tree = halotree.Trees[haloid]
+    cat = MT.MTCatalogue(halopath + '/trees',numHosts=6)
+    tree = cat[5]
+    #    treefile,indexfile,hostid=haloid)
+    #tree = halotree.Trees[haloid]
     mainbranch = tree.getMainBranch(0)
     scale = mainbranch['scale']
     rvir = mainbranch['rvir']

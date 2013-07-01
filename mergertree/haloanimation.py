@@ -11,15 +11,16 @@ import readhalos.readgroup as readgroup
 import readhalos.RSDataReaderv2 as RSDataReader
 import readsnapshots.readsnap as rs
 import readsnapshots.readsnapHDF5 as rhdf5
-import mergertrees.GregNewMTCatalogue as MT
+import mergertrees.MTCatalogue as MT
 #IMPORT PERSONAL LIBRARIS
-from grifflib import *
+from brendanlib.grifflib import *
 
 basepath = determinebasepath(platform.node())
 #haloid = 190897
-haloid = 208737
+haloid = 103794
+#208737
 hubble = 0.6711
-startsnap = 25
+startsnap = 50
 endsnap = 63
 snaplist = range(startsnap,endsnap+1)
 boxwidth = 4./hubble
@@ -31,8 +32,8 @@ basedir = basepath + 'caterpillar/contamination/halos/halo' + str(haloid)
 treefile = halopath + '/trees/tree.bin'
 indexfile = halopath + '/trees/treeindex.csv'
 
-halotree = MT.NewMTCatalogue(treefile,indexfile,hostid=haloid)
-tree = halotree.Trees[haloid]
+cat = MT.MTCatalogue(halopath + '/trees',numHosts=6,indexbyrsid=True)
+tree = cat[haloid]
 mainbranch = tree.getMainBranch(0)
 scalemb = mainbranch['scale']
 rvirmb = mainbranch['rvir']
@@ -64,20 +65,20 @@ Azmb = mainbranch['A[z]']
 haloidmb = mainbranch['origid']
 #fullbranch = halotree.Trees[80609].data
 # LOAD PARENT HALOS
-halodata = RSDataReader.RSDataReader(halopath,63,digits=2)
-allhalos = halodata.get_hosts()
-
-print "---------------------------------------"
-print "       rockstar id: ",haloid
-print "---------------------------------------"
-print "        x-pos:",'{:.2f}'.format(float(allhalos.ix[haloid]['posX'])), "   \ [Mpc/h]"
-print "        y-pos:",'{:.2f}'.format(float(allhalos.ix[haloid]['posY'])), "   \ [Mpc/h]"
-print "        z-pos:",'{:.2f}'.format(float(allhalos.ix[haloid]['posZ'])), "   \ [Mpc/h]"
-print "  virial mass:",'{0:.2e}'.format(float(allhalos.ix[haloid]['mvir'])),"\ [Msol/h]"
-print "virial radius:",'{:.2f}'.format(float(allhalos.ix[haloid]['rvir'])),"  \ [kpc]"
-print "---------------------------------------"
-del allhalos
-
+#halodata = RSDataReader.RSDataReader(halopath,61,digits=2)
+#allhalos = halodata.get_hosts()
+#haloid = 254188
+#print "---------------------------------------"
+#print "       rockstar id: ",haloid
+#print "---------------------------------------"
+#print "        x-pos:",'{:.2f}'.format(float(allhalos.ix[haloid]['posX'])), "   \ [Mpc/h]"
+#print "        y-pos:",'{:.2f}'.format(float(allhalos.ix[haloid]['posY'])), "   \ [Mpc/h]"
+#print "        z-pos:",'{:.2f}'.format(float(allhalos.ix[haloid]['posZ'])), "   \ [Mpc/h]"
+#print "  virial mass:",'{0:.2e}'.format(float(allhalos.ix[haloid]['mvir'])),"\ [Msol/h]"
+#print "virial radius:",'{:.2f}'.format(float(allhalos.ix[haloid]['rvir'])),"  \ [kpc]"
+#print "---------------------------------------"
+#del allhalos
+#sys.exit()
 # FIGURE DIMENSIONS
 labelsize = 14
 ticksize = 12
@@ -184,8 +185,9 @@ for snap in snaplist:
         cond1h = (xposhosts >= xcen - boxwidth/2.) & (xposhosts <= xcen + boxwidth/2.)
         cond2h = (yposhosts >= ycen - boxwidth/2.) & (yposhosts <= ycen + boxwidth/2.)
         cond3h = (zposhosts >= zcen - boxwidth/2.) & (zposhosts <= zcen + boxwidth/2.)
-        cond4h = (hosts['id'] != haloidsnap)
-        condh = cond1h & cond2h & cond3h & cond4h
+        #cond4h = (hosts['id'] != haloidsnap)
+        condh = cond1h & cond2h & cond3h 
+        #& cond4h
         xposhosts = xposhosts[condh]
         yposhosts = yposhosts[condh]
         zposhosts = zposhosts[condh]
@@ -213,9 +215,9 @@ for snap in snaplist:
                 ztrans = (zposplace[hostindex] - (zcen - boxwidth/2.))/boxwidth
                 extra = 1.5*rvirplace[hostindex]/1000
                 addon = extra/boxwidth
-                placetext(ax1,xtrans+addon,ytrans,mstring,'normal',8)
-                placetext(ax2,xtrans+addon,ztrans,mstring,'normal',8)
-                placetext(ax3,ytrans+addon,ztrans,mstring,'normal',8)
+                placetext(ax1,xtrans+addon,ytrans,mstring,'normal',11)
+                placetext(ax2,xtrans+addon,ztrans,mstring,'normal',11)
+                placetext(ax3,ytrans+addon,ztrans,mstring,'normal',11)
     
     #placetext(ax1,10,78,'hello')
 
@@ -395,7 +397,7 @@ for snap in snaplist:
             horizontalalignment='center',
             verticalalignment='center',
             color='black',
-            fontsize=10,
+            fontsize=12,
             transform = ax11.transAxes)
 
         ax11.text(0.5, 0.95,'prolate',
@@ -411,9 +413,9 @@ for snap in snaplist:
         extra = 1.5*rvirch/1000
         addon = extra/boxwidth 
 
-        placetext(ax1,xtrans+addon,ytrans,mstring,'bold',10)
-        placetext(ax2,xtrans+addon,ztrans,mstring,'bold',10)
-        placetext(ax3,ytrans+addon,ztrans,mstring,'bold',10)
+        placetext(ax1,xtrans+addon,ytrans,mstring,'bold',11)
+        placetext(ax2,xtrans+addon,ztrans,mstring,'bold',11)
+        placetext(ax3,ytrans+addon,ztrans,mstring,'bold',11)
 
     ax2.set_title(titlestr)
 
@@ -481,7 +483,8 @@ for snap in snaplist:
     ax14.set_xlim([0,1])
     ax15.set_xlim([0,1])
 
-    fig.savefig(figdir + 'snap' + str(snap) + '-xyzhalopos-haloparam.png',bbox_inches='tight')
+    #fig.savefig(figdir + 'snap' + str(snap) + '-xyzhalopos-haloparam.png',bbox_inches='tight')
+    fig.savefig(figdir + 'TESTsnap' + str(snap) + '.png',bbox_inches='tight')
     plt.close(fig)
 
 
