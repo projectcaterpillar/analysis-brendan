@@ -11,17 +11,15 @@ from brendanlib.grifflib import *
 import mergertrees.MTCatalogue as MT
 
 # DEFINE PARAMS
-#candidatelist = [80609,158376]
+#candidatelist = [103794,208737,190897,208737,140666,28221,147419,28188,147273,78411,131988,19910]
+candidatelist = [190897,208737,140666,28221,28188,147273,78411,131988,19910,147419]
 
-candidatelist = [103794]
-#[208737]
-#190897]
-#,208737,140666,28221,147419,28188,147273,78411,131988,19910]
 ticksize = 11
 hubble = 0.6711
 
 legendfontsize = 10
 axislabelfontsize = 14
+
 #Alternatives
 #121761,43307
 
@@ -81,9 +79,9 @@ ncols = 0
 icand = 0
 for haloid in candidatelist:
     haloid = int(haloid)
-    cat = MT.MTCatalogue(halopath + '/trees',numHosts=6)
-    tree = cat[5]
-    #    treefile,indexfile,hostid=haloid)
+    print "Halo ID:",haloid
+    cat = MT.MTCatalogue(halopath + '/trees',indexbyrsid=True,haloids=[haloid])
+    tree = cat[0]
     #tree = halotree.Trees[haloid]
     mainbranch = tree.getMainBranch(0)
     scale = mainbranch['scale']
